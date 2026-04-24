@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genshin Characters</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        .topbar {
+            padding: 20px;
+        }
+
+        .topbar a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .controls {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 18px;
+            margin: 6px;
+            border: none;
+            border-radius: 8px;
+            background: #38bdf8;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+
+        .active-filter {
+            background: orange;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 15px;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+            background: #334155;
+        }
+
+        .card img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .rarity-4_star {
+            border: 2px solid #a855f7;
+        }
+
+        .rarity-5_star {
+            border: 2px solid gold;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="/">Home</a>
+    </div>
+
+    <h1>Genshin Characters</h1>
+
+    <div class="controls">
+        <button id="btn-all" onclick="filterCharacters('all')">All</button>
+        <button id="btn-4" onclick="filterCharacters('4_star')">4 Star</button>
+        <button id="btn-5" onclick="filterCharacters('5_star')">5 Star</button>
+    </div>
+
+    <div class="grid" id="characters"></div>
+
+    <script>
+        let allCharacters = [];
+
+        function renderCharacters(characters) {
+            const container = document.getElementById("characters");
+            container.innerHTML = "";
+
+            characters.forEach(char => {
+                const div = document.createElement("div");
+                div.classList.add("card", `rarity-${char.rarity}`);
+
+                div.innerHTML = `
+                    <img src="${char.image}" alt="${char.name}" onerror="this.style.display='none'">
+                    <h3>${char.name}</h3>
+                    <p><strong>Vision:</strong> ${char.vision}</p>
+                    <p><strong>Weapon:</strong> ${char.weapon}</p>
+                    <p><strong>Rarity:</strong> ${char.rarity}</p>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        function setActiveButton(filter) {
+            document.getElementById("btn-all").classList.remove("active-filter");
+            document.getElementById("btn-4").classList.remove("active-filter");
+            document.getElementById("btn-5").classList.remove("active-filter");
+
+            if (filter === "all") document.getElementById("btn-all").classList.add("active-filter");
+            if (filter === "4_star") document.getElementById("btn-4").classList.add("active-filter");
+            if (filter === "5_star") document.getElementById("btn-5").classList.add("active-filter");
+        }
+
+        function filterCharacters(rarity) {
+            if (rarity === "all") {
+                renderCharacters(allCharacters);
+            } else {
+                renderCharacters(allCharacters.filter(char => char.rarity === rarity));
+            }
+            setActiveButton(rarity);
+        }
+
+        function loadData() {
+            fetch('/characters')
+                .then(async (res) => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Gagal mengambil data');
+                    return data;
+                })
+                .then(data => {
+                    allCharacters = data.results;
+                    renderCharacters(allCharacters);
+                    setActiveButton('all');
+                    console.log('TOTAL CHARACTER:', data.total_results);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Gagal mengambil data character');
+                });
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

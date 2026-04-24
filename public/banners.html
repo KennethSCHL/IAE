@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genshin Banners</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        .topbar {
+            padding: 20px;
+        }
+
+        .topbar a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        h1 {
+            margin-top: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #38bdf8;
+        }
+
+        .card img {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 12px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            background: #38bdf8;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+
+        .result {
+            margin-top: 15px;
+            background: #334155;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <a href="/">Home</a>
+    </div>
+
+    <h1>Genshin Banners</h1>
+    <div class="grid" id="banners"></div>
+
+    <script>
+        function calculatePrimogems(index) {
+            const startDate = document.getElementById(`startDate-${index}`).value;
+            const releaseDate = document.getElementById(`releaseDate-${index}`).value;
+            const dailyPrimogems = parseInt(document.getElementById(`dailyPrimogems-${index}`).value) || 0;
+            const currentPrimogems = parseInt(document.getElementById(`currentPrimogems-${index}`).value) || 0;
+
+            const resultBox = document.getElementById(`result-${index}`);
+
+            if (!startDate || !releaseDate) {
+                resultBox.innerHTML = "<p>Silakan isi tanggal mulai dan tanggal banner rilis.</p>";
+                return;
+            }
+
+            const start = new Date(startDate);
+            const release = new Date(releaseDate);
+
+            const diffTime = release - start;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 0) {
+                resultBox.innerHTML = "<p>Tanggal mulai sudah melewati tanggal banner rilis.</p>";
+                return;
+            }
+
+            const totalFarmed = diffDays * dailyPrimogems;
+            const totalPrimogems = currentPrimogems + totalFarmed;
+            const totalWishes = Math.floor(totalPrimogems / 160);
+
+            resultBox.innerHTML = `
+                <p><strong>Hari tersisa:</strong> ${diffDays} hari</p>
+                <p><strong>Primogem saat ini:</strong> ${currentPrimogems}</p>
+                <p><strong>Primogem yang bisa dikumpulkan:</strong> ${totalFarmed}</p>
+                <p><strong>Total primogem saat banner rilis:</strong> ${totalPrimogems}</p>
+                <p><strong>Total wish:</strong> ${totalWishes}</p>
+            `;
+        }
+
+        function renderBanners(banners) {
+            const container = document.getElementById("banners");
+            container.innerHTML = "";
+
+            banners.forEach((banner, index) => {
+                const div = document.createElement("div");
+                div.classList.add("card");
+
+                div.innerHTML = `
+                    <img src="${banner.image}" alt="${banner.name}" onerror="this.style.display='none'">
+                    <h2>${banner.name}</h2>
+
+                    <div class="form-group">
+                        <label>Tanggal mulai farming</label>
+                        <input type="date" id="startDate-${index}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tanggal banner rilis</label>
+                        <input type="date" id="releaseDate-${index}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Primogem yang dimiliki sekarang</label>
+                        <input type="number" id="currentPrimogems-${index}" placeholder="contoh: 3200">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Primogem per hari</label>
+                        <input type="number" id="dailyPrimogems-${index}" placeholder="contoh: 60">
+                    </div>
+
+                    <button onclick="calculatePrimogems(${index})">
+                        Hitung Primogem
+                    </button>
+
+                    <div class="result" id="result-${index}">
+                        <p>Hasil perhitungan akan tampil di sini.</p>
+                    </div>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        function loadBanners() {
+            fetch('/banners')
+                .then(async (res) => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Gagal mengambil data banners');
+                    return data;
+                })
+                .then(data => {
+                    renderBanners(data.results);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Gagal mengambil data banners');
+                });
+        }
+
+        loadBanners();
+    </script>
+</body>
+</html>
