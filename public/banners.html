@@ -3,15 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genshin Banners</title>
+    <title>Primogem Pity Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #0f172a;
+            background-color: #0f172a;
             color: white;
             margin: 0;
             padding: 0;
             text-align: center;
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
 
         .topbar {
@@ -26,38 +31,41 @@
 
         h1 {
             margin-top: 10px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+        .subtitle {
+            color: #e2e8f0;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
             padding: 20px;
         }
 
         .card {
-            background: #1e293b;
+            background: rgba(30, 41, 59, 0.88);
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             border: 2px solid #38bdf8;
-        }
-
-        .card img {
-            width: 100%;
-            max-height: 180px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 15px;
+            text-align: left;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
         }
 
         .form-group {
-            margin: 10px 0;
-            text-align: left;
+            margin: 14px 0;
         }
 
         label {
             display: block;
             margin-bottom: 6px;
+            font-weight: bold;
         }
 
         input {
@@ -69,13 +77,15 @@
         }
 
         button {
-            margin-top: 12px;
-            padding: 10px 16px;
+            margin-top: 16px;
+            padding: 12px 18px;
             border: none;
             border-radius: 8px;
             background: #38bdf8;
             color: white;
             cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
         }
 
         button:hover {
@@ -83,11 +93,11 @@
         }
 
         .result {
-            margin-top: 15px;
-            background: #334155;
+            margin-top: 20px;
+            background: rgba(51, 65, 85, 0.92);
             border-radius: 10px;
-            padding: 12px;
-            text-align: left;
+            padding: 16px;
+            line-height: 1.8;
         }
     </style>
 </head>
@@ -96,109 +106,123 @@
         <a href="/">Home</a>
     </div>
 
-    <h1>Genshin Banners</h1>
-    <div class="grid" id="banners"></div>
+    <div class="container">
+        <h1>Primogem Pity Calculator</h1>
+        <p class="subtitle">Hitung apakah primogem kamu cukup untuk mencapai pity 90</p>
+
+        <div class="card">
+            <div class="form-group">
+                <label for="startDate">Tanggal mulai farming</label>
+                <input type="date" id="startDate">
+            </div>
+
+            <div class="form-group">
+                <label for="targetDate">Tanggal target</label>
+                <input type="date" id="targetDate">
+            </div>
+
+            <div class="form-group">
+                <label for="currentPrimogems">Primogem yang dimiliki sekarang</label>
+                <input type="number" id="currentPrimogems" placeholder="contoh: 3200">
+            </div>
+
+            <div class="form-group">
+                <label for="dailyPrimogems">Primogem per hari</label>
+                <input type="number" id="dailyPrimogems" placeholder="contoh: 60">
+            </div>
+
+            <div class="form-group">
+                <label for="currentPity">Pity saat ini</label>
+                <input type="number" id="currentPity" placeholder="contoh: 45" min="0" max="89">
+            </div>
+
+            <button onclick="calculatePrimogems()">Hitung Primogem</button>
+
+            <div class="result" id="result">
+                <p>Hasil perhitungan akan tampil di sini.</p>
+            </div>
+        </div>
+    </div>
 
     <script>
-        function calculatePrimogems(index) {
-            const startDate = document.getElementById(`startDate-${index}`).value;
-            const releaseDate = document.getElementById(`releaseDate-${index}`).value;
-            const dailyPrimogems = parseInt(document.getElementById(`dailyPrimogems-${index}`).value) || 0;
-            const currentPrimogems = parseInt(document.getElementById(`currentPrimogems-${index}`).value) || 0;
+        function loadBackground() {
+            fetch('/banners-background')
+                .then(async (res) => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Gagal mengambil background');
+                    return data;
+                })
+                .then(data => {
+                    if (data.image) {
+                        document.body.style.backgroundImage = `url('${data.image}')`;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                });
+        }
 
-            const resultBox = document.getElementById(`result-${index}`);
+        function calculatePrimogems() {
+            const startDate = document.getElementById("startDate").value;
+            const targetDate = document.getElementById("targetDate").value;
+            const currentPrimogems = parseInt(document.getElementById("currentPrimogems").value) || 0;
+            const dailyPrimogems = parseInt(document.getElementById("dailyPrimogems").value) || 0;
+            const currentPity = parseInt(document.getElementById("currentPity").value) || 0;
 
-            if (!startDate || !releaseDate) {
-                resultBox.innerHTML = "<p>Silakan isi tanggal mulai dan tanggal banner rilis.</p>";
+            const resultBox = document.getElementById("result");
+
+            if (!startDate || !targetDate) {
+                resultBox.innerHTML = "<p>Silakan isi tanggal mulai dan tanggal target.</p>";
+                return;
+            }
+
+            if (currentPity < 0 || currentPity > 89) {
+                resultBox.innerHTML = "<p>Pity saat ini harus di antara 0 sampai 89.</p>";
                 return;
             }
 
             const start = new Date(startDate);
-            const release = new Date(releaseDate);
+            const target = new Date(targetDate);
 
-            const diffTime = release - start;
+            const diffTime = target - start;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             if (diffDays < 0) {
-                resultBox.innerHTML = "<p>Tanggal mulai sudah melewati tanggal banner rilis.</p>";
+                resultBox.innerHTML = "<p>Tanggal target harus setelah tanggal mulai.</p>";
                 return;
             }
 
             const totalFarmed = diffDays * dailyPrimogems;
             const totalPrimogems = currentPrimogems + totalFarmed;
-            const totalWishes = Math.floor(totalPrimogems / 160);
+
+            const additionalPulls = Math.floor(totalPrimogems / 160);
+            const totalPity = currentPity + additionalPulls;
+
+            const pullsNeededTo90 = Math.max(90 - currentPity, 0);
+            const primogemsNeededTo90 = pullsNeededTo90 * 160;
+
+            const reachedFiveStar = totalPity >= 90;
+            const remainingPulls = Math.max(90 - totalPity, 0);
+            const remainingPrimogems = remainingPulls * 160;
 
             resultBox.innerHTML = `
                 <p><strong>Hari tersisa:</strong> ${diffDays} hari</p>
                 <p><strong>Primogem saat ini:</strong> ${currentPrimogems}</p>
                 <p><strong>Primogem yang bisa dikumpulkan:</strong> ${totalFarmed}</p>
-                <p><strong>Total primogem saat banner rilis:</strong> ${totalPrimogems}</p>
-                <p><strong>Total wish:</strong> ${totalWishes}</p>
+                <p><strong>Total primogem pada tanggal target:</strong> ${totalPrimogems}</p>
+                <p><strong>1 pull =</strong> 160 primogem</p>
+                <p><strong>Pull tambahan yang bisa dilakukan:</strong> ${additionalPulls}</p>
+                <p><strong>Pity saat ini:</strong> ${currentPity}</p>
+                <p><strong>Total pity pada tanggal target:</strong> ${totalPity}</p>
+                <p><strong>Pull yang dibutuhkan untuk mencapai pity 90:</strong> ${pullsNeededTo90}</p>
+                <p><strong>Primogem yang dibutuhkan untuk mencapai pity 90:</strong> ${primogemsNeededTo90}</p>
+                <p><strong>Status:</strong> ${reachedFiveStar ? "Mencapai pity 90, bintang 5 didapat" : "Belum mencapai pity 90"}</p>
+                <p><strong>Sisa pull menuju pity 90:</strong> ${remainingPulls}</p>
+                <p><strong>Sisa primogem menuju pity 90:</strong> ${remainingPrimogems}</p>
             `;
         }
 
-        function renderBanners(banners) {
-            const container = document.getElementById("banners");
-            container.innerHTML = "";
-
-            banners.forEach((banner, index) => {
-                const div = document.createElement("div");
-                div.classList.add("card");
-
-                div.innerHTML = `
-                    <img src="${banner.image}" alt="${banner.name}" onerror="this.style.display='none'">
-                    <h2>${banner.name}</h2>
-
-                    <div class="form-group">
-                        <label>Tanggal mulai farming</label>
-                        <input type="date" id="startDate-${index}">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Tanggal banner rilis</label>
-                        <input type="date" id="releaseDate-${index}">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Primogem yang dimiliki sekarang</label>
-                        <input type="number" id="currentPrimogems-${index}" placeholder="contoh: 3200">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Primogem per hari</label>
-                        <input type="number" id="dailyPrimogems-${index}" placeholder="contoh: 60">
-                    </div>
-
-                    <button onclick="calculatePrimogems(${index})">
-                        Hitung Primogem
-                    </button>
-
-                    <div class="result" id="result-${index}">
-                        <p>Hasil perhitungan akan tampil di sini.</p>
-                    </div>
-                `;
-
-                container.appendChild(div);
-            });
-        }
-
-        function loadBanners() {
-            fetch('/banners')
-                .then(async (res) => {
-                    const data = await res.json();
-                    if (!res.ok) throw new Error(data.error || 'Gagal mengambil data banners');
-                    return data;
-                })
-                .then(data => {
-                    renderBanners(data.results);
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Gagal mengambil data banners');
-                });
-        }
-
-        loadBanners();
+        loadBackground();
     </script>
 </body>
 </html>
