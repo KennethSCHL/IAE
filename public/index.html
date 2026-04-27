@@ -4,104 +4,193 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Genshin Homepage</title>
+
+    <!-- Font Awesome untuk icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        body {
+        /* Font custom */
+        @font-face {
+            font-family: 'GenshinFont';
+            src: url('./assets/fonts/zh-cn.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, #f7f7f7, #1e293b);
-            color: rgba(103, 201, 247, 0.815);
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             min-height: 100vh;
-             -webkit-text-stroke: 0.5px black;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+            font-family: 'GenshinFont', Arial, sans-serif;
+            color: white;
+
+            /* Background default jika database gagal */
+            background: linear-gradient(to bottom, #cfeeff, #1e293b);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Overlay agar teks lebih mudah dibaca */
+        .overlay {
+            min-height: 100vh;
+            background: rgba(0, 20, 50, 0.35);
+            padding: 50px 20px;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 40px 20px;
             text-align: center;
         }
 
         h1 {
-            font-size: 42px;
-            margin-bottom: 12px;
+            font-size: 44px;
+            font-weight: normal;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
         }
 
-        p {
-            color: #000000;
-            margin-bottom: 35px;
+        .subtitle {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: #eaf7ff;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
         }
 
         .menu-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 22px;
         }
 
         .menu-card {
-            background: rgba(99, 161, 253, 0.623);
-            border: 2px solid #68ccf7;
-            border-radius: 16px;
-            padding: 28px 18px;
-            color: rgb(255, 255, 255);
+            background: rgba(255, 255, 255, 0.78);
+            color: #12345f;
             text-decoration: none;
+            border-radius: 18px;
+            padding: 28px 18px;
+            min-height: 180px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            box-shadow: 0 8px 18px rgba(0,0,0,0.25);
             transition: 0.3s;
         }
 
         .menu-card:hover {
-            transform: translateY(-5px);
-            background: #7eb6ff;
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .menu-card i {
+            font-size: 34px;
+            margin-bottom: 15px;
+            color: #2d77b8;
+        }
+
+        .menu-card h2 {
+            font-size: 23px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .menu-card p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #244b78;
+        }
+
+        @media (max-width: 900px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .overlay {
+                padding: 35px 16px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Genshin Impact Database</h1>
-        <p>Pilih halaman yang ingin dilihat</p>
 
-        <div class="menu-grid">
-            <a href="/characters.html" class="menu-card">
-                <h2>Characters</h2>
-                <p>Lihat semua karakter</p>
-            </a>
+    <div class="overlay">
+        <div class="container">
 
-            <a href="/weapons.html" class="menu-card">
-                <h2>Weapons</h2>
-                <p>Lihat semua weapon</p>
-            </a>
-            <a href="/banners.html" class="menu-card">
-    <h2>Kalkulator</h2>
-    <p>Hitung apakah primogem kamu cukup</p>
-    </a>
-            <a href="/trailer.html" class="menu-card">
-            <h2>Trailer</h2>
-            <p>Trailer Character</p>
-            </a>
+            <h1>Genshin Impact Database</h1>
+            <p class="subtitle">Pilih halaman yang ingin dilihat</p>
+
+            <div class="menu-grid">
+
+                <a href="/characters.html" class="menu-card">
+                    <i class="fa-solid fa-user"></i>
+                    <h2>Characters</h2>
+                    <p>Lihat semua karakter</p>
+                </a>
+
+                <a href="/weapons.html" class="menu-card">
+                    <i class="fa-solid fa-khanda"></i>
+                    <h2>Weapons</h2>
+                    <p>Lihat semua weapon</p>
+                </a>
+
+                <a href="/banners.html" class="menu-card">
+                    <i class="fa-solid fa-calculator"></i>
+                    <h2>Kalkulator</h2>
+                    <p>Hitung apakah primogem kamu cukup</p>
+                </a>
+
+                <a href="/trailer.html" class="menu-card">
+                    <i class="fa-solid fa-film"></i>
+                    <h2>Trailer</h2>
+                    <p>Trailer Character</p>
+                </a>
+
+            </div>
+
         </div>
     </div>
+
+    <script>
+        function loadHomepageBackground() {
+            fetch('/homepage-background')
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.image) {
+                        document.body.style.backgroundImage = "url('" + data.image + "')";
+                    }
+                })
+                .catch(function(error) {
+                    console.log('Background gagal dimuat:', error);
+                });
+        }
+
+        loadHomepageBackground();
+    </script>
+
 </body>
 </html>
-
-<script>
-    function loadHomepageBackground() {
-        fetch('/homepage-background')
-            .then(async (res) => {
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'Gagal mengambil background');
-                return data;
-            })
-            .then(data => {
-                if (data.image) {
-                    document.body.style.backgroundImage = `url('${data.image}')`;
-                    document.body.style.backgroundSize = 'cover';
-                    document.body.style.backgroundPosition = 'center';
-                    document.body.style.backgroundRepeat = 'no-repeat';
-                }
-            })
-            .catch(err => {
-                console.error(err);
-            });
-    }
-
-    loadHomepageBackground();
-</script>

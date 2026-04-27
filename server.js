@@ -181,6 +181,58 @@ app.get('/banners-background', (req, res) => {
 });
 
 /* =========================
+   WEAPONS PAGE BACKGROUND
+========================= */
+app.get('/weapons-background', (req, res) => {
+    const sql = "SELECT image_url FROM weapon_background ORDER BY id DESC LIMIT 1";
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error ambil background weapon:', err);
+            return res.status(500).json({
+                error: 'Gagal mengambil background weapon'
+            });
+        }
+
+        if (results.length === 0) {
+            return res.json({
+                image: ''
+            });
+        }
+
+        res.json({
+            image: results[0].image_url
+        });
+    });
+});
+
+/* =========================
+   TRAILERS PAGE BACKGROUND
+========================= */
+app.get('/trailers-background', (req, res) => {
+    const sql = "SELECT image_url FROM trailer_background ORDER BY id DESC LIMIT 1";
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error ambil background trailer:', err);
+            return res.status(500).json({
+                error: 'Gagal mengambil background trailer'
+            });
+        }
+
+        if (results.length === 0) {
+            return res.json({
+                image: ''
+            });
+        }
+
+        res.json({
+            image: results[0].image_url
+        });
+    });
+});
+
+/* =========================
    TRAILERS
 ========================= */
 app.get('/trailers', (req, res) => {
@@ -197,7 +249,9 @@ app.get('/trailers', (req, res) => {
     });
 });
 
+/* =========================
+   SERVER LISTEN
+========================= */
 app.listen(PORT, () => {
     console.log(`Server jalan di http://localhost:${PORT}`);
 });
-

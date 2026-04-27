@@ -5,111 +5,272 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Genshin Weapons</title>
+
+    <!-- Icon Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: white;
-            text-align: center;
+        /* Font custom */
+        @font-face {
+            font-family: 'GenshinFont';
+            src: url('./assets/fonts/zh-cn.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'GenshinFont', Arial, sans-serif;
+            background-color: #0f172a;
+            color: white;
+            text-align: center;
+            min-height: 100vh;
+
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .overlay {
+            min-height: 100vh;
+            background: rgba(0, 20, 50, 0.35);
+            padding: 25px 20px 45px;
         }
 
         .topbar {
-            padding: 20px;
+            margin-bottom: 25px;
         }
 
         .topbar a {
-            color: #38bdf8;
+            display: inline-block;
+            color: white;
             text-decoration: none;
-            font-weight: bold;
+            font-size: 16px;
+            padding: 10px 22px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        .topbar a:hover {
+            background: rgba(255, 255, 255, 0.38);
+            transform: translateY(-3px);
         }
 
         h1 {
-            margin-top: 10px;
+            font-size: 44px;
+            font-weight: normal;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
         }
 
         .controls {
-            margin: 20px 0;
+            margin-bottom: 35px;
         }
 
         button {
-            padding: 10px 18px;
+            font-family: 'GenshinFont', Arial, sans-serif;
+            padding: 10px 22px;
             margin: 6px;
             border: none;
-            border-radius: 8px;
-            background: #38bdf8;
-            color: white;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.82);
+            color: #12345f;
             cursor: pointer;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.2);
+            transition: 0.3s;
         }
 
         button:hover {
-            background: #0ea5e9;
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.95);
         }
 
         .active-filter {
-            background: orange;
+            background: #7ecbff;
+            color: white;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 22px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .card {
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 15px;
+            background: rgba(255, 255, 255, 0.78);
+            color: #12345f;
+            border-radius: 18px;
+            padding: 25px 18px;
+            min-height: 310px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            box-shadow: 0 8px 18px rgba(0,0,0,0.25);
             transition: 0.3s;
         }
 
         .card:hover {
-            transform: scale(1.03);
-            background: #334155;
+            transform: translateY(-6px);
+            background: rgba(255, 255, 255, 0.92);
         }
 
         .card img {
-            width: 100px;
-            height: 100px;
+            width: 105px;
+            height: 105px;
             object-fit: contain;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
-        .rarity-5_star { border: 2px solid gold; }
-        .rarity-4_star { border: 2px solid #a855f7; }
-        .rarity-3_star { border: 2px solid #60a5fa; }
-        .rarity-2_star { border: 2px solid #94a3b8; }
-        .rarity-1_star { border: 2px solid #64748b; }
+        .card h3 {
+            font-size: 22px;
+            font-weight: normal;
+            margin-bottom: 14px;
+            color: #12345f;
+        }
+
+        .card p {
+            font-size: 14px;
+            margin: 5px 0;
+            color: #244b78;
+            line-height: 1.4;
+        }
+
+        .card strong {
+            color: #12345f;
+        }
+
+        .rarity-5_star {
+            border: 2px solid #f4c542;
+        }
+
+        .rarity-4_star {
+            border: 2px solid #b784ff;
+        }
+
+        .rarity-3_star {
+            border: 2px solid #7ecbff;
+        }
+
+        .rarity-2_star {
+            border: 2px solid #94a3b8;
+        }
+
+        .rarity-1_star {
+            border: 2px solid #64748b;
+        }
+
+        @media (max-width: 700px) {
+            .overlay {
+                padding: 22px 14px 40px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+                gap: 16px;
+            }
+
+            .card {
+                min-height: 275px;
+                padding: 20px 14px;
+            }
+
+            .card img {
+                width: 90px;
+                height: 90px;
+            }
+
+            .card h3 {
+                font-size: 18px;
+            }
+
+            .card p {
+                font-size: 13px;
+            }
+
+            button {
+                padding: 9px 16px;
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="topbar">
-        <a href="/">Home</a>
+
+    <div class="overlay">
+
+        <div class="topbar">
+            <a href="/">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+        </div>
+
+        <h1>Genshin Weapons</h1>
+
+        <div class="controls">
+            <button id="btn-all" onclick="filterWeapons('all')">All</button>
+            <button id="btn-5" onclick="filterWeapons('5_star')">5 Star</button>
+            <button id="btn-4" onclick="filterWeapons('4_star')">4 Star</button>
+            <button id="btn-3" onclick="filterWeapons('3_star')">3 Star</button>
+        </div>
+
+        <div class="grid" id="weapons"></div>
+
     </div>
-
-    <h1>Genshin Weapons</h1>
-
-    <div class="controls">
-        <button id="btn-all" onclick="filterWeapons('all')">All</button>
-        <button id="btn-5" onclick="filterWeapons('5_star')">5 Star</button>
-        <button id="btn-4" onclick="filterWeapons('4_star')">4 Star</button>
-        <button id="btn-3" onclick="filterWeapons('3_star')">3 Star</button>
-    </div>
-
-    <div class="grid" id="weapons"></div>
 
     <script>
         let allWeapons = [];
+
+        function loadBackground() {
+            fetch('/weapons-background')
+                .then(async function(res) {
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        throw new Error(data.error || 'Gagal mengambil background weapon');
+                    }
+
+                    return data;
+                })
+                .then(function(data) {
+                    if (data.image) {
+                        document.body.style.backgroundImage = "url('" + data.image + "')";
+                        document.body.style.backgroundSize = "cover";
+                        document.body.style.backgroundPosition = "center";
+                        document.body.style.backgroundRepeat = "no-repeat";
+                        document.body.style.backgroundAttachment = "fixed";
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Background weapon gagal dimuat:', err);
+                });
+        }
 
         function renderWeapons(weapons) {
             const container = document.getElementById("weapons");
             container.innerHTML = "";
 
-            weapons.forEach(weapon => {
+            weapons.forEach(function(weapon) {
                 const div = document.createElement("div");
-                div.classList.add("card", `rarity-${weapon.rarity}`);
+
+                div.classList.add("card", "rarity-" + weapon.rarity);
 
                 div.innerHTML = `
                     <img src="${weapon.image}" alt="${weapon.name}" onerror="this.style.display='none'">
@@ -125,46 +286,75 @@
         }
 
         function setActiveButton(filter) {
-            ["all", "5", "4", "3"].forEach(id => {
-                const btn = document.getElementById(`btn-${id}`);
-                if (btn) btn.classList.remove("active-filter");
+            const buttons = ["all", "5", "4", "3"];
+
+            buttons.forEach(function(id) {
+                const btn = document.getElementById("btn-" + id);
+
+                if (btn) {
+                    btn.classList.remove("active-filter");
+                }
             });
 
-            if (filter === "all") document.getElementById("btn-all").classList.add("active-filter");
-            if (filter === "5_star") document.getElementById("btn-5").classList.add("active-filter");
-            if (filter === "4_star") document.getElementById("btn-4").classList.add("active-filter");
-            if (filter === "3_star") document.getElementById("btn-3").classList.add("active-filter");
+            if (filter === "all") {
+                document.getElementById("btn-all").classList.add("active-filter");
+            }
+
+            if (filter === "5_star") {
+                document.getElementById("btn-5").classList.add("active-filter");
+            }
+
+            if (filter === "4_star") {
+                document.getElementById("btn-4").classList.add("active-filter");
+            }
+
+            if (filter === "3_star") {
+                document.getElementById("btn-3").classList.add("active-filter");
+            }
         }
 
         function filterWeapons(rarity) {
             if (rarity === "all") {
                 renderWeapons(allWeapons);
             } else {
-                renderWeapons(allWeapons.filter(weapon => weapon.rarity === rarity));
+                const filteredWeapons = allWeapons.filter(function(weapon) {
+                    return weapon.rarity === rarity;
+                });
+
+                renderWeapons(filteredWeapons);
             }
+
             setActiveButton(rarity);
         }
 
         function loadWeapons() {
             fetch('/weapons')
-                .then(async (res) => {
+                .then(async function(res) {
                     const data = await res.json();
-                    if (!res.ok) throw new Error(data.error || 'Gagal mengambil data weapon');
+
+                    if (!res.ok) {
+                        throw new Error(data.error || 'Gagal mengambil data weapon');
+                    }
+
                     return data;
                 })
-                .then(data => {
+                .then(function(data) {
                     allWeapons = data.results;
+
                     renderWeapons(allWeapons);
                     setActiveButton('all');
+
                     console.log('TOTAL WEAPONS:', data.total_results);
                 })
-                .catch(err => {
-                    console.error(err);
+                .catch(function(err) {
+                    console.error('Data weapon gagal dimuat:', err);
                     alert('Gagal mengambil data weapon');
                 });
         }
 
+        loadBackground();
         loadWeapons();
     </script>
+
 </body>
 </html>
